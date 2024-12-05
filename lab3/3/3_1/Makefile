@@ -5,8 +5,6 @@ obj-m := $(TARGET_MODULE).o
 KDIR := /lib/modules/$(shell uname -r)/build
 PWD := $(shell pwd)
 CC := x86_64-linux-gnu-gcc-12
-# CC := gcc
-# CC := /usr/bin/x86_64-linux-gnu-gcc-12
 
 all:
 	$(MAKE) -C $(KDIR) M=$(PWD) modules
@@ -15,7 +13,7 @@ clean:
 	@rm -f *.o *.ko *.mod.* *.symvers *.order *.mod.cmd *.mod .*.mod.* .*.*.cmd
 
 Prog:
-	@$(CC) -o 3_1.out 3_1.c
+	@$(CC) -o 3_1.out 3_1.c -lpthread
 	@sudo ./3_1.out
 	@rm -f 3_1.txt 3_1.out
 
@@ -24,3 +22,13 @@ load:
 
 unload:
 	@sudo rmmod $(TARGET_MODULE).ko
+
+
+refresh:
+	@if lsmod | grep -q $(TARGET_MODULE); then \
+		sudo rmmod $(TARGET_MODULE); \
+	fi
+	@make clean
+	@make all
+	@make load
+

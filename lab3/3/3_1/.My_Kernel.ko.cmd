@@ -1,0 +1,1 @@
+savedcmd_/home/henry/OS-Lab/lab3/3/3_1/My_Kernel.ko := ld -r -m elf_x86_64 -z noexecstack --build-id=sha1  -T scripts/module.lds -o /home/henry/OS-Lab/lab3/3/3_1/My_Kernel.ko /home/henry/OS-Lab/lab3/3/3_1/My_Kernel.o /home/henry/OS-Lab/lab3/3/3_1/My_Kernel.mod.o

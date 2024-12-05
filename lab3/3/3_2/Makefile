@@ -4,7 +4,7 @@ obj-m := $(TARGET_MODULE).o
 
 KDIR := /lib/modules/$(shell uname -r)/build
 PWD := $(shell pwd)
-CC := gcc
+CC := x86_64-linux-gnu-gcc-12
 
 all:
 	$(MAKE) -C $(KDIR) M=$(PWD) modules
@@ -30,3 +30,11 @@ load:
 
 unload:
 	@sudo rmmod $(TARGET_MODULE).ko
+
+refresh:
+	@if lsmod | grep -q $(TARGET_MODULE); then \
+		sudo rmmod $(TARGET_MODULE); \
+	fi
+	@make clean
+	@make all
+	@make load
