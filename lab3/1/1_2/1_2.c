@@ -10,16 +10,19 @@
 
 volatile int a = 0;
 volatile int lock = UNLOCK;
-pthread_mutex_t mutex;
 
 void spin_lock() {
     asm volatile(
+        // If other thread are holding the lock
+        // it will stuck in the loop until unlock
+        // But when unlocking, we don't need this mechanism
         "loop:\n\t"
         "mov $0, %%eax\n\t"
         /*YOUR CODE HERE*/
-
+        "xchg %%eax, %[lock]\n\t"
+        "cmp $0, %%eax\n\t"
         /****************/
-        "js loop\n\t"
+        "je loop\n\t"
         :
         : [lock] "m" (lock)
         : "eax", "memory"
@@ -30,7 +33,7 @@ void spin_unlock() {
     asm volatile(
         "mov $1, %%eax\n\t"
         /*YOUR CODE HERE*/
-
+        "xchg %%eax, %[lock]\n\t"
         /****************/
         :
         : [lock] "m" (lock)
@@ -42,7 +45,6 @@ void spin_unlock() {
 void *thread(void *arg) {
 
     for(int i=0; i<10000; i++){
-
         spin_lock();
         a = a + 1;
         spin_unlock();
@@ -55,12 +57,10 @@ int main() {
     fptr = fopen("1.txt", "a");
     pthread_t t1, t2;
 
-    pthread_mutex_init(&mutex, 0);
     pthread_create(&t1, NULL, thread, NULL);
     pthread_create(&t2, NULL, thread, NULL);
     pthread_join(t1, NULL);
     pthread_join(t2, NULL);
-    pthread_mutex_destroy(&mutex);
 
     fprintf(fptr, "%d ", a);
     fclose(fptr);

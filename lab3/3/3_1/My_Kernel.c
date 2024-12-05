@@ -18,6 +18,25 @@ static ssize_t Mywrite(struct file *fileptr, const char __user *ubuf, size_t buf
 static ssize_t Myread(struct file *fileptr, char __user *ubuf, size_t buffer_len, loff_t *offset){
     /*Your code here*/
 
+    // Ensure only operate once
+    if (*offset > 0) return 0;
+
+    struct task_struct  *thread;
+    int len = 0;
+    
+    for_each_thread(current, thread) {
+        if (thread->tgid == thread->pid) continue;
+        len += sprintf(buf+len, "PID: %d, TID: %d, Priority: %d, State: %d \n", 
+                        thread->tgid, 
+                        thread->pid, 
+                        thread->prio,
+                        thread->__state);
+    }
+
+    copy_to_user(ubuf, buf, len);
+
+    *offset += len;
+    return len;
     /****************/
 }
 
