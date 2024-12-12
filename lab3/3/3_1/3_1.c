@@ -96,7 +96,7 @@ int main(){
     pthread_create(&t2, NULL, thread2, NULL);
     while (fgets(buffer, sizeof(buffer), fptr4) != NULL){
         printf("%s", buffer);
-    }
+    } 
     pthread_join(t1, NULL);
     pthread_join(t2, NULL);
     for(int i=0; i<matrix_row_x; i++){
